@@ -68,7 +68,7 @@ bool insereIrmao(PONT inic, PERSONAL_INFO infoIrmao, PERSONAL_INFO infoPessoa){
     irmao->pai = pessoa->pai;
     irmao->mae = pessoa->mae;
 
-    PONT p = &pessoa;    
+    PONT p = pessoa;    
     while (p->proxIrmao)
         p = p->proxIrmao;
     p->proxIrmao = irmao;
@@ -94,29 +94,29 @@ bool inserePai(PONT inic, PERSONAL_INFO infoPai, PERSONAL_INFO infoFilho){
      return(true);
 }
 
-void exibirArvore(PONT raiz){
-    if (raiz == NULL) return;
+// void exibirArvore(PONT raiz){
+//     if (raiz == NULL) return;
     
-    printf("%d(",raiz->chave);
-    PONT p = raiz->primFilho;
-    while (p) {
-        exibirArvore(p);
-        p = p->proxIrmao;
-    }
+//     printf("%d(",raiz->chave);
+//     PONT p = raiz->primFilho;
+//     while (p) {
+//         exibirArvore(p);
+//         p = p->proxIrmao;
+//     }
     
-    printf(")");
-}
+//     printf(")");
+// }
 
-int main(){
-    PONT raiz = inicializa(54);
+// int main(){
+//     PONT raiz = inicializa(54);
 
-    insere(raiz, 67, 54);
-    insere(raiz, 68, 54);
-    insere(raiz, 53, 68);
-    insere(raiz, 52, 67);
-    insere(raiz, 2, 52);
-    insere(raiz, 3, 52);
+//     insere(raiz, 67, 54);
+//     insere(raiz, 68, 54);
+//     insere(raiz, 53, 68);
+//     insere(raiz, 52, 67);
+//     insere(raiz, 2, 52);
+//     insere(raiz, 3, 52);
 
 
-    exibirArvore(raiz);
-}
+//     exibirArvore(raiz);
+// }
