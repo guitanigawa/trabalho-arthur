@@ -19,6 +19,8 @@ typedef struct no {
 
 typedef NO* PONT;
 
+
+
 PONT criaNovoNo(PERSONAL_INFO info){
     PONT novo = (PONT)malloc(sizeof(NO));
     
@@ -87,18 +89,36 @@ bool inserePai(PONT inic, PERSONAL_INFO infoPai, PERSONAL_INFO infoFilho){
     PONT filho = buscaChave(infoFilho, inic);
     if (!filho) return(false);
     
+    if(filho->pai) return(false);
     PONT pai = criaNovoNo(infoPai);
+    filho->pai = pai;
+    
     PONT p = filho->proxIrmao;
-    
-    
-    if (!p) pessoa->proxIrmao = irmao;
-    else {
-        while (p->proxIrmao)
-            p = p->proxIrmao;
-        p->proxIrmao = irmao;
+    while(p){
+        if(!(p->pai != filho->pai)) p->pai = filho->pai;
+
+        p = p->proxIrmao;
     }
+
+    return(true);
+}
+
+bool insereMae(PONT inic, PERSONAL_INFO infoMae, PERSONAL_INFO infoFilho){
+    PONT filho = buscaChave(infoFilho, inic);
+    if (!filho) return(false);
     
-     return(true);
+    if(filho->mae) return(false);
+    PONT mae = criaNovoNo(infoMae);
+    filho->mae = mae;
+    
+    PONT p = filho->proxIrmao;
+    while(p){
+        if(!(p->mae != filho->mae)) p->mae = filho->mae;
+
+        p = p->proxIrmao;
+    }
+
+    return(true);
 }
 
 // void exibirArvore(PONT raiz){
