@@ -36,20 +36,23 @@ PONT inicializa(PERSONAL_INFO info) {
 }
 
 
-PONT buscaChave(char nome[50], PONT eu){
-    if (eu == NULL) return NULL;
-    if (eu->info.nome == nome) return eu;
+PONT buscaChave(PERSONAL_INFO infoProc, PONT inic){
+    if (inic == NULL) return NULL;
+    if (strcmp(inic->info.nome, infoProc.nome) == 0 
+        && strcmp(inic->info.sobrenome, infoProc.sobrenome) == 0
+        && strcmp(inic->info.data_nascimento, infoProc.data_nascimento) == 0
+    ) return inic;
     
-    PONT p = eu->mae;
+    PONT p = inic->mae;
     while(p) {
-        PONT resp = buscaChave(nome, p);
+        PONT resp = buscaChave(infoProc, p);
         if (resp) return(resp);
         p = p->proxIrmao;
     }
     
-    p = eu->pai;
+    p = inic->pai;
     while(p) {
-        PONT resp = buscaChave(nome, p);
+        PONT resp = buscaChave(infoProc, p);
         if (resp) return(resp);
         p = p->proxIrmao;
     }
@@ -57,18 +60,35 @@ PONT buscaChave(char nome[50], PONT eu){
     return(NULL);
 }
 
-bool insere(PONT raiz, TIPOCHAVE novaChave, TIPOCHAVE chavePai){
-    PONT pai = buscaChave(chavePai,raiz);
-    if (!pai) return(false);
+bool insereIrmao(PONT inic, PERSONAL_INFO infoIrmao, PERSONAL_INFO infoPessoa){
+    PONT pessoa = buscaChave(infoPessoa, inic);
+    if (!pessoa) return(false);
     
-    PONT filho = criaNovoNo(novaChave);
-    PONT p = pai->primFilho;
+    PONT irmao = criaNovoNo(infoIrmao);
+    irmao->pai = pessoa->pai;
+    irmao->mae = pessoa->mae;
+
+    PONT p = &pessoa;    
+    while (p->proxIrmao)
+        p = p->proxIrmao;
+    p->proxIrmao = irmao;
     
-    if (!p) pai->primFilho = filho;
+    return(true);
+}
+
+bool inserePai(PONT inic, PERSONAL_INFO infoPai, PERSONAL_INFO infoFilho){
+    PONT filho = buscaChave(infoFilho, inic);
+    if (!filho) return(false);
+    
+    PONT pai = criaNovoNo(infoPai);
+    PONT p = filho->proxIrmao;
+    
+    
+    if (!p) pessoa->proxIrmao = irmao;
     else {
         while (p->proxIrmao)
-        p = p->proxIrmao;
-        p->proxIrmao = filho;
+            p = p->proxIrmao;
+        p->proxIrmao = irmao;
     }
     
      return(true);
