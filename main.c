@@ -43,6 +43,13 @@ PONT buscaChave(PERSONAL_INFO infoProc, PONT inic){
         && strcmp(inic->info.data_nascimento, infoProc.data_nascimento) == 0
     ) return inic;
     
+    PONT irmao = inic->proxIrmao;
+    while(irmao) {
+        PONT resp = buscaChave(infoProc, irmao);
+        if (resp) return resp;
+        irmao = irmao->proxIrmao;
+    }
+
     PONT p = inic->mae;
     while(p) {
         PONT resp = buscaChave(infoProc, p);
