@@ -121,29 +121,94 @@ bool insereMae(PONT inic, PERSONAL_INFO infoMae, PERSONAL_INFO infoFilho){
     return(true);
 }
 
-// void exibirArvore(PONT raiz){
-//     if (raiz == NULL) return;
+void exibirArvore(PONT inic){
+    if (inic == NULL) return;
     
-//     printf("%d(",raiz->chave);
-//     PONT p = raiz->primFilho;
-//     while (p) {
-//         exibirArvore(p);
-//         p = p->proxIrmao;
-//     }
+    PONT p = inic;
+    while(p){
+
+        printf("------------------------\n");
+        printf("Nome: %s\nSobrenome: %s\nData de nasc.: %s\n",
+            p->info.nome, 
+            p->info.sobrenome, 
+            p->info.data_nascimento
+        );
+
+        printf("Irmãos: ");
+        
+        PONT i = p->proxIrmao;
+        if(!i) printf("sem irmãos\n");
+        while(i){   
+            if(i->proxIrmao == NULL) printf("%s\n", i->info.nome);
+            else printf("%s, ", i->info.nome);
+            
+            i = i->proxIrmao;
+        }
+
+        if(p->mae) printf("Mãe: %s\n", p->mae->info.nome);
+        if(p->pai) printf("Pai: %s\n", p->pai->info.nome);
+
+        p = p->proxIrmao;
+    }
+
+    p = inic->mae;
+    while(p){
+        exibirArvore(p);
+        p = p->proxIrmao;
+    }
+
+    p = inic->pai;
+    while(p){
+        exibirArvore(p);
+        p = p->proxIrmao;
+    }
+}
+
+int main() {
+    // Criando eu
+    PERSONAL_INFO eu = {"Guilherme", "Silva", "26/06/2007"};
+    PONT arvore = inicializa(eu);
     
-//     printf(")");
-// }
+    // Inserindo pais
+    PERSONAL_INFO pai = {"Paulo", "Silva", "17/09/1980"};
+    PERSONAL_INFO mae = {"Selma", "Tanigawa", "20/04/1982"};
+    
+    inserePai(arvore, pai, eu);
+    insereMae(arvore, mae, eu);
 
-// int main(){
-//     PONT raiz = inicializa(54);
+    // Inserindo irmãos do pai
+    PERSONAL_INFO irmaoPai1 = {"Giberto", "Silva", "17/09/1977"};
+    PERSONAL_INFO irmaoPai2 = {"André", "Silva", "17/09/1975"};
+    PERSONAL_INFO irmaoPai3 = {"Roberto", "Silva", "17/09/1970"};
+    PERSONAL_INFO irmaoPai4 = {"Aparecido", "Silva", "17/09/1960"};
 
-//     insere(raiz, 67, 54);
-//     insere(raiz, 68, 54);
-//     insere(raiz, 53, 68);
-//     insere(raiz, 52, 67);
-//     insere(raiz, 2, 52);
-//     insere(raiz, 3, 52);
+    insereIrmao(arvore, irmaoPai1, pai);
+    insereIrmao(arvore, irmaoPai2, pai);
+    insereIrmao(arvore, irmaoPai3, pai);
+    insereIrmao(arvore, irmaoPai4, pai);
 
+    // Inserindo irmãos da mãe
+    PERSONAL_INFO irmaoMae1 = {"Eduardo", "Tanigawa", "20/04/1977"};
+    PERSONAL_INFO irmaoMae2 = {"Cristina", "Tanigawa", "20/04/1976"};
 
-//     exibirArvore(raiz);
-// }
+    insereIrmao(arvore, irmaoMae1, mae);
+    insereIrmao(arvore, irmaoMae2, mae);
+
+    // Inserindo avós
+    PERSONAL_INFO avoPai1 = {"Ilda", "Colombo", "17/09/1945"};
+    PERSONAL_INFO avoPai2 = {"Sebastião", "Silva", "17/09/1943"};
+    
+    inserePai(arvore, avoPai1, pai);
+    insereMae(arvore, avoPai2, pai);
+    
+    PERSONAL_INFO avoMae1 = {"Tamaki", "Tanigawa", "20/04/1960"};
+    PERSONAL_INFO avoMae2 = {"Antonio", "Tanigawa", "20/04/1970"};
+
+    inserePai(arvore, avoMae1, mae);
+    insereMae(arvore, avoMae2, mae);    
+
+    // Exibindo a árvore completa
+    exibirArvore(arvore);
+    
+    return 0;
+}
