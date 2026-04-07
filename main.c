@@ -15,6 +15,7 @@ typedef struct no {
     struct no *pai;
 
     struct no *proxIrmao;
+    struct no *antIrmao;
 } NO;
 
 typedef NO* PONT;
@@ -29,6 +30,7 @@ PONT criaNovoNo(PERSONAL_INFO info){
     novo->pai = NULL;
 
     novo->proxIrmao = NULL;
+    novo->antIrmao = NULL;
 
     return(novo);
 }
@@ -44,27 +46,17 @@ PONT buscaChave(PERSONAL_INFO infoProc, PONT inic){
         && strcmp(inic->info.sobrenome, infoProc.sobrenome) == 0
         && strcmp(inic->info.data_nascimento, infoProc.data_nascimento) == 0
     ) return inic;
-    
-    PONT irmao = inic->proxIrmao;
-    while(irmao) {
-        PONT resp = buscaChave(infoProc, irmao);
-        if (resp) return resp;
-        irmao = irmao->proxIrmao;
-    }
 
-    PONT p = inic->mae;
-    while(p) {
-        PONT resp = buscaChave(infoProc, p);
-        if (resp) return(resp);
-        p = p->proxIrmao;
-    }
+    PONT resp = buscaChave(infoProc, inic->proxIrmao);
+    if (resp) return resp;
     
-    p = inic->pai;
-    while(p) {
-        PONT resp = buscaChave(infoProc, p);
-        if (resp) return(resp);
-        p = p->proxIrmao;
-    }
+    resp = buscaChave(infoProc, inic->mae);
+    if (resp) return resp;
+    
+    resp = buscaChave(infoProc, inic->pai);
+    if (resp) return resp;
+    
+    return NULL;
     
     return(NULL);
 }
@@ -77,11 +69,12 @@ bool insereIrmao(PONT inic, PERSONAL_INFO infoIrmao, PERSONAL_INFO infoPessoa){
     irmao->pai = pessoa->pai;
     irmao->mae = pessoa->mae;
 
-    PONT p = pessoa;    
-    while (p->proxIrmao)
+    PONT p = pessoa; 
+    while(p->proxIrmao)
         p = p->proxIrmao;
-    p->proxIrmao = irmao;
     
+    p->proxIrmao = irmao;
+    irmao->antIrmao = p;
     return(true);
 }
 
@@ -95,9 +88,16 @@ bool inserePai(PONT inic, PERSONAL_INFO infoPai, PERSONAL_INFO infoFilho){
     
     PONT p = filho->proxIrmao;
     while(p){
-        if(!(p->pai != filho->pai)) p->pai = filho->pai;
+        if((p->pai != filho->pai)) p->pai = filho->pai;
 
         p = p->proxIrmao;
+    }
+
+    p = filho->antIrmao;
+    while(p){
+        if((p->pai != filho->pai)) p->pai = filho->pai;
+
+        p = p->antIrmao;
     }
 
     return(true);
@@ -106,64 +106,83 @@ bool inserePai(PONT inic, PERSONAL_INFO infoPai, PERSONAL_INFO infoFilho){
 bool insereMae(PONT inic, PERSONAL_INFO infoMae, PERSONAL_INFO infoFilho){
     PONT filho = buscaChave(infoFilho, inic);
     if (!filho) return(false);
-    
+
     if(filho->mae) return(false);
     PONT mae = criaNovoNo(infoMae);
     filho->mae = mae;
     
     PONT p = filho->proxIrmao;
     while(p){
-        if(!(p->mae != filho->mae)) p->mae = filho->mae;
+        if((p->mae != filho->mae)) p->mae = filho->mae;
 
         p = p->proxIrmao;
+    }
+
+    p = filho->antIrmao;
+    while(p){
+        if((p->mae != filho->mae)) p->mae = filho->mae;
+
+        p = p->antIrmao;
     }
 
     return(true);
 }
 
-void exibirArvore(PONT inic){
+void imprimirTodosIrmaos(PONT pessoa) {
+    if (!pessoa) return;
+    
+    PONT primeiro = pessoa;
+    while(primeiro->antIrmao) {
+        primeiro = primeiro->antIrmao;
+    }
+    
+    PONT irmao = primeiro;
+    int count = 0;
+    while(irmao) {
+        count++;
+        irmao = irmao->proxIrmao;
+    }
+    
+    if (count <= 1) {
+        printf("Nenhum\n");
+        return;
+    }
+    
+    irmao = primeiro;
+    while(irmao) {
+        if (irmao != pessoa) {
+            printf("%s %s", irmao->info.nome, irmao->info.sobrenome);
+            if (irmao->proxIrmao) printf(", ");
+        }
+        irmao = irmao->proxIrmao;
+    }
+    printf("\n");
+}
+
+void exibirArvore(PONT inic) {
     if (inic == NULL) return;
     
     PONT p = inic;
-    while(p){
-
+    while(p) {
         printf("------------------------\n");
-        printf("Nome: %s\nSobrenome: %s\nData de nasc.: %s\n",
-            p->info.nome, 
-            p->info.sobrenome, 
-            p->info.data_nascimento
-        );
-
-        printf("Irmãos: ");
+        printf("Nome: %s %s\n", p->info.nome, p->info.sobrenome);
+        printf("Nascimento: %s\n", p->info.data_nascimento);
         
-        PONT i = p->proxIrmao;
-        if(!i) printf("sem irmãos\n");
-        while(i){   
-            if(i->proxIrmao == NULL) printf("%s\n", i->info.nome);
-            else printf("%s, ", i->info.nome);
-            
-            i = i->proxIrmao;
-        }
-
-        if(p->mae) printf("Mãe: %s\n", p->mae->info.nome);
-        if(p->pai) printf("Pai: %s\n", p->pai->info.nome);
-
+        printf("Irmaos: ");
+        imprimirTodosIrmaos(p);
+        
+        if(p->mae) 
+            printf("Mae: %s %s\n", p->mae->info.nome, p->mae->info.sobrenome);
+        if(p->pai) 
+            printf("Pai: %s %s\n", p->pai->info.nome, p->pai->info.sobrenome);
+        
+        printf("------------------------\n");
         p = p->proxIrmao;
     }
-
-    p = inic->mae;
-    while(p){
-        exibirArvore(p);
-        p = p->proxIrmao;
-    }
-
-    p = inic->pai;
-    while(p){
-        exibirArvore(p);
-        p = p->proxIrmao;
-    }
+    
+    exibirArvore(inic->mae);
+    exibirArvore(inic->pai);
 }
-
 int main() {
     // Criando eu
     PERSONAL_INFO eu = {"Guilherme", "Silva", "26/06/2007"};
@@ -198,14 +217,14 @@ int main() {
     PERSONAL_INFO avoPai1 = {"Ilda", "Colombo", "17/09/1945"};
     PERSONAL_INFO avoPai2 = {"Sebastião", "Silva", "17/09/1943"};
     
-    inserePai(arvore, avoPai1, pai);
-    insereMae(arvore, avoPai2, pai);
+    inserePai(arvore, avoPai2, pai);
+    insereMae(arvore, avoPai1, pai);
     
     PERSONAL_INFO avoMae1 = {"Tamaki", "Tanigawa", "20/04/1960"};
     PERSONAL_INFO avoMae2 = {"Antonio", "Tanigawa", "20/04/1970"};
 
-    inserePai(arvore, avoMae1, mae);
-    insereMae(arvore, avoMae2, mae);    
+    inserePai(arvore, avoMae2, mae);
+    insereMae(arvore, avoMae1, mae);    
 
     // Exibindo a árvore completa
     exibirArvore(arvore);
