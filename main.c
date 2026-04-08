@@ -1,3 +1,5 @@
+// Participantes: Fabrício Cardoso, Guilherme Tanigawa
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -66,8 +68,11 @@ bool insereIrmao(PONT inic, PERSONAL_INFO infoIrmao, PERSONAL_INFO infoPessoa){
     if (!pessoa) return(false);
     
     PONT irmao = criaNovoNo(infoIrmao);
+    // Achei que fosse fazer mais sentido dessa forma (irmãos sempre tem os mesmos pais)
     irmao->pai = pessoa->pai;
     irmao->mae = pessoa->mae;
+
+
 
     PONT p = pessoa; 
     while(p->proxIrmao)
