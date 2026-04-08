@@ -58,8 +58,6 @@ PONT buscaChave(PERSONAL_INFO infoProc, PONT inic){
     resp = buscaChave(infoProc, inic->pai);
     if (resp) return resp;
     
-    return NULL;
-    
     return(NULL);
 }
 
@@ -71,7 +69,6 @@ bool insereIrmao(PONT inic, PERSONAL_INFO infoIrmao, PERSONAL_INFO infoPessoa){
     // Achei que fosse fazer mais sentido dessa forma (irmãos sempre tem os mesmos pais)
     irmao->pai = pessoa->pai;
     irmao->mae = pessoa->mae;
-
 
 
     PONT p = pessoa; 
